@@ -1,18 +1,25 @@
 package com.gabriel.spring.resources;
 
+import java.net.URI;
 import java.util.List;
+
+
 
 import com.gabriel.spring.entities.User;
 import com.gabriel.spring.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@RestController
+@RestController // ESTA CLASSE É UM CONTROLADOR REST QUE TEM O CAMINHO NO REQUEST MAPPING
 @RequestMapping(value = "/users")
 public class UserResource {
     @Autowired
@@ -29,6 +36,14 @@ public class UserResource {
         User obj =service.findById(id);
         return ResponseEntity.ok().body(obj);
 
+    }
+
+    @PostMapping
+    public ResponseEntity<User> insert(@RequestBody User obj ){
+        obj = service.insert(obj);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        .buildAndExpand(obj.getId()).toUri();// ele faz com que criasse um caminho a partir de um URI para o usuario
+        return ResponseEntity.created(uri).body(obj);
     }
 
 }
