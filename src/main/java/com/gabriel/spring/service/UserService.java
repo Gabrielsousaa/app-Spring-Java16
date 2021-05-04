@@ -1,8 +1,11 @@
 package com.gabriel.spring.service;
 
 import com.gabriel.spring.repositories.UserRepository;
+import com.gabriel.spring.service.exceptions.DatabaseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +34,15 @@ public class UserService {
     }
 
     public void delete(Long id){
-         repository.deleteById(id);
+        try {
+            repository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw  new com.gabriel.spring.service.exceptions.ResourceNotFoundException(id);
+        }catch (DataIntegrityViolationException e ){
+
+            throw new DatabaseException(e.getMessage());
+        }
+         
 
     }
 
